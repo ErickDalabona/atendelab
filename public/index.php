@@ -1,4 +1,4 @@
 <?php
-echo "<h1>AtendeLab</h1>";
-echo "<p>Sistema iniciado com sucesso!</p>";
-?>
+ini_set("display_errors", 1);
+error_reporting(E_ALL);
+require_once __DIR__ . "/../routes.php";
