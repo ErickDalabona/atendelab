@@ -21,7 +21,7 @@ class PessoasController
     {
         exigirAutenticacao();
         $sql = 'SELECT id, nome, documento, telefone, email, curso, periodo, status, observacoes FROM pessoas ORDER BY nome';
-        $this->json($this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC));
+        $this->json(['pessoas' => $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC)]);
     }
 
     public function buscar(): void
@@ -30,25 +30,30 @@ class PessoasController
         $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
         if (!$id) { $this->json(['erro' => 'ID invalido.'], 400); return; }
 
-        $stmt = $this->pdo->prepare('SELECT id, nome, documento, telefone, email, curso, periodo, status, observacoes, criado_em, atualizado_em FROM pessoas WHERE id = :id');
+        $stmt = $this->pdo->prepare('SELECT id, nome, documento, telefone, email, curso, periodo, status, observacoes FROM pessoas WHERE id = :id');
         $stmt->execute(['id' => $id]);
         $pessoa = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$pessoa) { $this->json(['erro' => 'Pessoa nao encontrada.'], 404); return; }
-        $this->json($pessoa);
+        $this->json(['pessoa' => $pessoa]);
+    }
+
+    public function buscarPorId(): void
+    {
+        $this->buscar();
     }
 
     public function criar(): void
     {
         exigirAutenticacao();
-        $nome        = trim($_POST['nome']        ?? '');
-        $documento   = trim($_POST['documento']   ?? '');
-        $telefone    = trim($_POST['telefone']     ?? '');
-        $email       = trim($_POST['email']        ?? '');
-        $curso       = trim($_POST['curso']        ?? '');
-        $periodo     = trim($_POST['periodo']      ?? '');
-        $status      = $_POST['status']            ?? 'ativo';
-        $observacoes = trim($_POST['observacoes']  ?? '');
+        $nome        = trim($_POST['nome']       ?? '');
+        $documento   = trim($_POST['documento']  ?? '');
+        $telefone    = trim($_POST['telefone']   ?? '');
+        $email       = trim($_POST['email']      ?? '');
+        $curso       = trim($_POST['curso']      ?? '');
+        $periodo     = trim($_POST['periodo']    ?? '');
+        $status      = $_POST['status']          ?? 'ativo';
+        $observacoes = trim($_POST['observacoes'] ?? '');
 
         if ($nome === '' || $documento === '' || $email === '') {
             $this->json(['erro' => 'Nome, documento e e-mail sao obrigatorios.'], 422); return;
@@ -76,14 +81,14 @@ class PessoasController
     {
         exigirAutenticacao();
         $id          = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
-        $nome        = trim($_POST['nome']        ?? '');
-        $documento   = trim($_POST['documento']   ?? '');
-        $telefone    = trim($_POST['telefone']     ?? '');
-        $email       = trim($_POST['email']        ?? '');
-        $curso       = trim($_POST['curso']        ?? '');
-        $periodo     = trim($_POST['periodo']      ?? '');
-        $status      = $_POST['status']            ?? 'ativo';
-        $observacoes = trim($_POST['observacoes']  ?? '');
+        $nome        = trim($_POST['nome']       ?? '');
+        $documento   = trim($_POST['documento']  ?? '');
+        $telefone    = trim($_POST['telefone']   ?? '');
+        $email       = trim($_POST['email']      ?? '');
+        $curso       = trim($_POST['curso']      ?? '');
+        $periodo     = trim($_POST['periodo']    ?? '');
+        $status      = $_POST['status']          ?? 'ativo';
+        $observacoes = trim($_POST['observacoes'] ?? '');
 
         if (!$id || $nome === '' || $documento === '' || $email === '') {
             $this->json(['erro' => 'Dados obrigatorios ausentes.'], 422); return;

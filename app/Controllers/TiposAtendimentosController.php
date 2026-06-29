@@ -21,7 +21,7 @@ class TiposAtendimentosController
     {
         exigirAutenticacao();
         $sql = 'SELECT id, nome, descricao, status FROM tipos_atendimentos ORDER BY nome';
-        $this->json($this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC));
+        $this->json(['tipos' => $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC)]);
     }
 
     public function buscar(): void
@@ -30,12 +30,17 @@ class TiposAtendimentosController
         $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
         if (!$id) { $this->json(['erro' => 'ID invalido.'], 400); return; }
 
-        $stmt = $this->pdo->prepare('SELECT id, nome, descricao, status, criado_em, atualizado_em FROM tipos_atendimentos WHERE id = :id');
+        $stmt = $this->pdo->prepare('SELECT id, nome, descricao, status FROM tipos_atendimentos WHERE id = :id');
         $stmt->execute(['id' => $id]);
         $tipo = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$tipo) { $this->json(['erro' => 'Tipo nao encontrado.'], 404); return; }
-        $this->json($tipo);
+        $this->json(['tipo' => $tipo]);
+    }
+
+    public function buscarPorId(): void
+    {
+        $this->buscar();
     }
 
     public function criar(): void
