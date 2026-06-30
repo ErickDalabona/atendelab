@@ -20,7 +20,7 @@ class AuthController
             exit;
         }
 
-        $erro = $_SESSION['erro_login'] ?? null;
+        $erroLogin = $_SESSION['erro_login'] ?? null;
         $mensagem = $_SESSION['mensagem'] ?? null;
 
         unset($_SESSION['erro_login'], $_SESSION['mensagem']);
